@@ -1,0 +1,34 @@
+spring:
+  datasource:
+    url: ${DB_URL}?currentSchema=user-service
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: none
+    database: postgresql
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        default_schema: user-service
+  flyway:
+    url: ${spring.datasource.url}
+    user: ${spring.datasource.username}
+    password: ${spring.datasource.password}
+    schemas: user-service
+    table: flyway_history
+
+  kafka:
+    consumer:
+      bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
+      group-id: ${KAFKA_GROUP_ID}
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: '*'
+        spring.json.type.mapping: "org.keycloak.events.Event:com.novaops.userservice.infrastructure.adapter.messaging.KeycloakEvent"
+server:
+  port: 8081

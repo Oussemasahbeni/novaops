@@ -1,0 +1,55 @@
+server:
+  port: 8222
+
+spring:
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: 6379
+  cloud:
+    gateway:
+      server:
+        webflux:
+          discovery:
+            locator:
+              enabled: true
+              lower-case-service-id: true
+          routes:
+            - id: user-service
+              uri: lb://USER-SERVICE
+              predicates:
+                - Path=/api/v1/users/**
+              filters:
+                - name: CircuitBreaker
+                  args:
+                    name: userServiceCircuitBreaker
+                    fallbackUri: forward:/fallback/user-service
+                - name: RequestRateLimiter
+                  args:
+                    redis-rate-limiter.replenishRate: 20 # requests per second
+                    redis-rate-limiter.burstCapacity: 40 # maximum burst capacity
+                    redis-rate-limiter.requestedTokens: 1 # tokens per request
+                    key-resolver: "#{@ipKeyResolver}"
+
+
+resilience4j.circuitbreaker:
+  configs:
+    default:
+      registerHealthIndicator: true
+
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    enabled: true
+    path: /docs
+    operationsSorter: method
+    display-request-duration: true
+    urls:
+      - url: /api-docs
+        name: API Gateway Service
+      - name: User Service API
+        url: /user-service/v3/api-docs
+      - name: Notification Service API
+        url: /notification-service/v3/api-docs
