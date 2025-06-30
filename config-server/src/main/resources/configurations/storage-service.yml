@@ -1,0 +1,29 @@
+server:
+  port: 8083
+
+
+app:
+  storage:
+    provider: azure
+  #aws:
+  #  s3:
+  #    bucket-name: ${AWS_S3_BUCKET_NAME}
+  #    cdn-base-url: ${AWS_S3_CDN_BASE_URL}
+  #file:
+  #  uploads:
+  #    path: "uploads"
+  #    public-url-prefix: "/uploads"
+
+
+spring:
+  cloud:
+    azure:
+      storage:
+        blob:
+          connection-string: ${AZURE_STORAGE_CONNECTION_STRING}
+  #   aws:
+  #      credentials:
+  #        access-key: ${AWS_ACCESS_KEY}
+  #        secret-key: ${AWS_SECRET_KEY}
+  #      s3:
+  #        region: ${AWS_S3_REGION}

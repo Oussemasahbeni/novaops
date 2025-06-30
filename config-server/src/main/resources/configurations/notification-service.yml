@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: ${DB_URL}?currentSchema=notification-service
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/novaops}?currentSchema=notification-service
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
@@ -13,9 +13,15 @@ spring:
       hibernate:
         format_sql: true
         default_schema: notification-service
+  flyway:
+    url: ${spring.datasource.url}
+    user: ${spring.datasource.username}
+    password: ${spring.datasource.password}
+    schemas: notification-service
+    table: flyway_history
   mail:
-    host: ${MAIL_HOST}
-    port: ${MAIL_PORT}
+    host: ${MAIL_HOST:localhost}
+    port: ${MAIL_PORT:1025}
     username: ${MAIL_USERNAME}
     password: ${MAIL_PASSWORD}
     properties:
@@ -27,18 +33,13 @@ spring:
           connectiontimeout: 5000
           timeout: 3000
           writetimeout: 5000
-  flyway:
-    url: ${spring.datasource.url}
-    user: ${spring.datasource.username}
-    password: ${spring.datasource.password}
-    schemas: notification-service
-    table: flyway_history
+
 
 application:
-  frontend-url: ${FRONTEND_URL}
+  frontend-url: ${FRONTEND_URL:http://localhost:4200}
   websocket:
     endpoint: "/ws"
-    allowed-origins: ${FRONTEND_URL}
+    allowed-origins: ${FRONTEND_URL:http://localhost:4200}
     application-destination-prefix: "/app"
     user-destination-prefix: "/user"
     broker: "/user"

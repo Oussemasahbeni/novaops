@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "org.novaops.storageservice.proto";
+option java_outer_classname = "StorageServiceProto";
+
+// Import Google's Empty message for methods that return nothing (void)
+import "google/protobuf/empty.proto";
+
+service StorageService {
+  // Uploads a single file using a client-side stream.
+  // The client will send a stream of messages, first metadata, then data chunks.
+  rpc UploadFile(stream UploadRequest) returns (Blob);
+
+  rpc DeleteFile(DeleteRequest) returns (google.protobuf.Empty);
+}
+
+
+message UploadRequest {
+  oneof request {
+    FileInfo info = 1;      // Sent once as the first message
+    bytes chunk_data = 2;   // Sent for every subsequent chunk of the file
+  }
+}
+
+// Message to hold the file's metadata.
+message FileInfo {
+  string name = 1;
+  string content_type = 2;
+}
+
+
+message Blob {
+  string name = 1;
+  string type = 2;
+  string url = 3;
+  int64 size = 4;
+}
+
+message DeleteRequest {
+  string url = 1;
+}

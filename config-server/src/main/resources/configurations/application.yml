@@ -3,7 +3,7 @@ eureka:
     prefer-ip-address: true
   client:
     service-url:
-      defaultZone: ${EUREKA_URL}
+      defaultZone: ${EUREKA_URL:http://localhost:8761/eureka}
 spring:
   cloud:
     config:
@@ -12,7 +12,10 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: ${KEYCLOAK_ISSUER_URI}
+          issuer-uri: ${KEYCLOAK_ISSUER_URI:http://localhost:9090/realms/novaops}
+  virtual:
+    threads:
+      enabled: true
 
 springdoc:
   api-docs:
@@ -31,9 +34,9 @@ springdoc:
 
 keycloak:
   realm: novaops
-  client-id: ${KEYCLOAK_CLIENT_ID}
-  client-secret: ${KEYCLOAK_CLIENT_SECRET}
-  url: ${KEYCLOAK_URL}
+  client-id: ${KEYCLOAK_CLIENT_ID:novaops-backend}
+  client-secret: ${KEYCLOAK_CLIENT_SECRET} # The secret for the client, will be loaded from the vault
+  url: ${KEYCLOAK_URL:http://localhost:9090}
   default-user-password: ${DEFAULT_USER_PASSWORD} # The initial password for the default user (will be changed on first login)
 
 

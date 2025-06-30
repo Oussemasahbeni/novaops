@@ -26,7 +26,7 @@ public class ResilienceConfig {
             id ->
                 new Resilience4JConfigBuilder(id)
                     .timeLimiterConfig(
-                        TimeLimiterConfig.custom().timeoutDuration(Duration.ofMillis(2000)).build())
+                        TimeLimiterConfig.custom().timeoutDuration(Duration.ofMillis(3000)).build())
                     .circuitBreakerConfig(
                         CircuitBreakerConfig.custom()
                             .slidingWindowSize(10)
@@ -41,4 +41,6 @@ public class ResilienceConfig {
                             .build())
                     .build());
   }
+
+
 }

@@ -25,7 +25,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @DataJpaTest
 @AutoConfigureTestDatabase
 @Import(UserMapperImpl.class)
-public class UserJpaAdapterTest {
+class UserJpaAdapterTest {
 
   @Container @ServiceConnection
   static PostgreSQLContainer<?> postgreSQLContainer =

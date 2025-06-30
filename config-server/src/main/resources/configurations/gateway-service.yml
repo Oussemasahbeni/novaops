@@ -4,7 +4,7 @@ server:
 spring:
   data:
     redis:
-      host: ${REDIS_HOST}
+      host: ${REDIS_HOST:localhost}
       port: 6379
   cloud:
     gateway:
@@ -14,6 +14,22 @@ spring:
             locator:
               enabled: true
               lower-case-service-id: true
+          default-filters:
+            - name: Retry
+              args:
+                retries: 3
+                statuses: BAD_GATEWAY, GATEWAY_TIMEOUT
+                methods: GET, POST
+                backoff:
+                  firstBackoff: 500ms
+                  maxBackoff: 2000ms
+                  factor: 2
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 20 # requests per second
+                redis-rate-limiter.burstCapacity: 40 # maximum burst capacity
+                redis-rate-limiter.requestedTokens: 1 # tokens per request
+                key-resolver: "#{@ipKeyResolver}"
           routes:
             - id: user-service
               uri: lb://USER-SERVICE
@@ -24,18 +40,23 @@ spring:
                   args:
                     name: userServiceCircuitBreaker
                     fallbackUri: forward:/fallback/user-service
-                - name: RequestRateLimiter
-                  args:
-                    redis-rate-limiter.replenishRate: 20 # requests per second
-                    redis-rate-limiter.burstCapacity: 40 # maximum burst capacity
-                    redis-rate-limiter.requestedTokens: 1 # tokens per request
-                    key-resolver: "#{@ipKeyResolver}"
 
 
-resilience4j.circuitbreaker:
-  configs:
-    default:
-      registerHealthIndicator: true
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        registerHealthIndicator: true
+  timelimiter:
+    configs:
+      default:
+        timeout-duration: 3s
+
+  retry:
+    configs:
+      default:
+        max-attempts: 3
+        wait-duration: 500ms
 
 
 springdoc:

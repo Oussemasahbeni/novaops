@@ -1,12 +1,23 @@
 spring:
   profiles:
-    active: native
+    active: vault,native
   application:
     name: config-server
   cloud:
     config:
       server:
+        vault:
+          order: 1
+          host: ${VAULT_HOST:localhost}
+          port: ${VAULT_PORT:8200}
+          scheme: http
+          backend: secret
+          kv-version: 2
+          authentication: TOKEN
+          token: ${VAULT_TOKEN:root}
+          profile-separator: ","
         native:
+          order: 2
           search-locations: classpath:/configurations
 
 management:
